@@ -34,7 +34,6 @@ function initBackgroundSlider() {
     const slides = document.querySelectorAll('.bg-slide');
     if (!slides.length) return;
     
-    // Lazy load background untuk slide 2-5
     slides.forEach((slide, i) => {
         const bg = slide.dataset.bg;
         if (bg && i > 0) {
@@ -44,8 +43,6 @@ function initBackgroundSlider() {
         }
     });
     
-    if (isReducedMotion()) return;
-    
     let currentIndex = 0;
     const totalSlides = slides.length;
     
@@ -53,18 +50,28 @@ function initBackgroundSlider() {
     
     sliderInterval = setInterval(() => {
         if (!isPageActive) return;
+        
         slides[currentIndex].classList.remove('active');
         currentIndex = (currentIndex + 1) % totalSlides;
+        
+        // Reset animation untuk zoom
+        slides[currentIndex].style.animation = 'none';
+        // Force reflow
+        void slides[currentIndex].offsetWidth;
+        // Re-apply animation
+        slides[currentIndex].style.animation = '';
+        
         slides[currentIndex].classList.add('active');
     }, 6000);
 }
 
-// ===== SPARKLES =====
+// ===== SPARKLES (LEBIH BANYAK) =====
 function createSparkles(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     
-    const count = isMobile() ? 8 : 20;
+    // ✅ Naikkan jumlah — Mobile: 15, Desktop: 30
+    const count = isMobile() ? 15 : 30;
     const fragment = document.createDocumentFragment();
     
     for (let i = 0; i < count; i++) {
@@ -73,8 +80,8 @@ function createSparkles(containerId) {
         sparkle.style.left = Math.random() * 100 + '%';
         sparkle.style.top = Math.random() * 100 + '%';
         sparkle.style.animationDelay = Math.random() * 3 + 's';
-        sparkle.style.animationDuration = (1 + Math.random() * 2) + 's';
-        sparkle.style.width = (2 + Math.random() * 4) + 'px';
+        sparkle.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+        sparkle.style.width = (3 + Math.random() * 4) + 'px';
         sparkle.style.height = sparkle.style.width;
         fragment.appendChild(sparkle);
     }
@@ -95,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     createSparkles('coverSparkles');
     createSparkles('globalSparkles');
     
-    // ✅ Preload gambar mempelai — SUDAH DISESUAIKAN dengan nama file Anda
+    // Preload gambar mempelai
     const preloadImages = [
         'asest/mempelai p.png',
         'asest/mempelai w.png'
@@ -217,7 +224,7 @@ document.addEventListener('visibilitychange', () => {
 
 startCountdown();
 
-// ===== SCROLL REVEAL (SUDAH DIPERBAIKI) =====
+// ===== SCROLL REVEAL =====
 function initScrollReveal() {
     const reveals = document.querySelectorAll('.section-header, .couple-card, .event-card, .gallery-item, .closing-card, .guestbook-form, .gift-card');
     
@@ -240,8 +247,8 @@ function initScrollReveal() {
             }
         });
     }, {
-        threshold: 0.05,                     // ✅ Turunkan (dari 0.15)
-        rootMargin: '0px 0px 0px 0px'        // ✅ Hilangkan margin negatif
+        threshold: 0.05,
+        rootMargin: '0px 0px 0px 0px'
     });
     
     reveals.forEach(reveal => {
@@ -250,7 +257,7 @@ function initScrollReveal() {
         observer.observe(reveal);
     });
     
-    // ✅ Fallback: paksa tampil kalau setelah 2 detik masih opacity 0
+    // Fallback
     setTimeout(() => {
         reveals.forEach(el => {
             if (getComputedStyle(el).opacity === '0') {
@@ -477,7 +484,6 @@ const addressBox = document.getElementById('addressBox');
 
 if (copyBankBtn) {
     copyBankBtn.addEventListener('click', function() {
-        // ✅ SUDAH SAMA dengan yang di index.html
         const bankNumber = '081232871066';
         
         navigator.clipboard.writeText(bankNumber).then(() => {
